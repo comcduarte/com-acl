@@ -56,12 +56,11 @@ return [
     'acl' => [
         'guest' => [
             'denied' => ['view'],
-            'acl/config' => NULL,
+            'acl/config' => ['create','clear','index'],
         ],
-        'member' => [
-            'acl/config' => [],
-            'acl/default' => NULL,
-        ],
+    ],
+    'acl_config' => [
+        'source' => 'db',
     ],
     'controllers' => [
         'factories' => [

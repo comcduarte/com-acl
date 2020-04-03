@@ -24,8 +24,6 @@ class AclForm extends AbstractBaseForm
             ],
         ],['priority' => 100]);
         
-        parent::init();
-        
         $this->add([
             'name' => 'RESOURCE',
             'type' => Text::class,
@@ -40,19 +38,29 @@ class AclForm extends AbstractBaseForm
             ],
         ],['priority' => 100]);
         
-        parent::init();
-        
         $this->add([
             'name' => 'PRIVILEGE',
             'type' => Text::class,
             'attributes' => [
                 'class' => 'form-control',
                 'id' => 'PRIVILEGE',
-                'required' => 'true',
                 'placeholder' => '',
             ],
             'options' => [
                 'label' => 'Privilege',
+            ],
+        ],['priority' => 100]);
+        
+        $this->add([
+            'name' => 'POLICY',
+            'type' => Text::class,
+            'attributes' => [
+                'class' => 'form-control',
+                'id' => 'POLICY',
+                'placeholder' => '',
+            ],
+            'options' => [
+                'label' => 'Policy',
             ],
         ],['priority' => 100]);
     }

@@ -31,11 +31,47 @@ class AclService implements EventManagerAwareInterface
         return $this->acl;
     }
     
-    public function setup(array $config)
+    public function setup(array $data)
     {
         $acl = $this->getAcl();
         
-        foreach ($config as $role => $resources) {
+        /******************************
+         * Parser for Database Config
+         ******************************/
+        foreach ($data as $record) {
+            $role = ('' == $record['ROLE']) ? NULL : $record['ROLE'];
+            $resource = ('' == $record['RESOURCE']) ? NULL : $record['RESOURCE'];
+            $privilege = ('' == $record['PRIVILEGE']) ? NULL : $record['PRIVILEGE'];
+            $policy = ('' == $record['POLICY']) ? NULL : $record['POLICY'];
+            
+            if (!$acl->hasRole($role)) {
+                $acl->addRole(new GenericRole($role));
+            }
+            
+            if (!$acl->hasResource($resource)) {
+                $acl->addResource(new GenericResource($resource));
+            }
+            
+            switch ($policy) 
+            {
+                case 'allow':
+                    $acl->allow($role, $resource, $privilege);
+                    break;
+                case 'deny':
+                    $acl->deny($role, $resource, $privilege);
+                    break;
+                default:
+                    break;
+            }
+            
+        }
+    }
+    
+    public function setupConfig(array $data)
+    {
+        $acl = $this->getAcl();
+        
+        foreach ($data as $role => $resources) {
             if (!$acl->hasRole($role)) {
                 $acl->addRole(new GenericRole($role));
             }
@@ -58,6 +94,40 @@ class AclService implements EventManagerAwareInterface
              * Default Rule
              */
             return FALSE;
+        }
+    }
+    
+    public function setupRoles(array $data) 
+    {
+        $acl = $this->getAcl();
+        
+        /******************************
+         * Parser for Database Config
+         ******************************/
+        foreach ($data as $record) {
+            $role = $record['ROLENAME'];
+            $parent = $record['PARENT'];
+            
+            if (!$acl->hasRole($role)) {
+                $acl->addRole(new GenericRole($role), $parent);
+            }
+        }
+    }
+    
+    public function setupUsers(array $data)
+    {
+        $acl = $this->getAcl();
+        
+        /******************************
+         * Parser for Database Config
+         ******************************/
+        foreach ($data as $record) {
+            $role = $record['ROLENAME'];
+            $user = $record['USERNAME'];
+            
+            if (!$acl->hasRole($user)) {
+                $acl->addRole(new GenericRole($user), $role);
+            }
         }
     }
 }

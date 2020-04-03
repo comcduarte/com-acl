@@ -26,7 +26,7 @@ class AclListener implements ListenerAggregateInterface
         if ($this->getAuthService()->hasIdentity()) {
             $authService = $this->getAuthService();
             $identity = $authService->getIdentity();
-            $role = 'member';
+            $role = $identity;
         }
         
         $routeMatch = $e->getRouteMatch();
