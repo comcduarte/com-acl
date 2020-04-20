@@ -6,9 +6,14 @@ use Laminas\Authentication\AuthenticationService;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\ListenerAggregateInterface;
 use Laminas\Mvc\MvcEvent;
+use Laminas\Db\Adapter\AdapterAwareTrait;
+use User\Model\UserModel;
+use Acl\Model\AclModel;
 
 class AclListener implements ListenerAggregateInterface
 {
+    use AdapterAwareTrait;
+    
     private $aclService;
     private $authService;
     private $listeners;
@@ -21,16 +26,36 @@ class AclListener implements ListenerAggregateInterface
     
     public function checkAcl(MvcEvent $e)
     {
-        $role = AclService::USER_GUEST;
+        $allowed = FALSE;
+        $role = AclModel::ROLE_EVERYONE;
+        $routeMatch = $e->getRouteMatch();
         
         if ($this->getAuthService()->hasIdentity()) {
             $authService = $this->getAuthService();
             $identity = $authService->getIdentity();
-            $role = $identity;
+//             $role = $identity;
+            
+            $user = new UserModel($this->adapter);
+            $user->read(['USERNAME' => $identity]);
+            $groups = $user->memberOf();
+            
+            $groups[]['ROLENAME'] = AclModel::ROLE_EVERYONE;
+            
+            foreach ($groups as $group) {
+                if ($this->getAclService()->isAllowed($group['ROLENAME'], $routeMatch->getMatchedRouteName(), $routeMatch->getParam('action'))) {
+                    $allowed = TRUE;
+                    $role = $group;
+                    break;
+                }
+            }
+        } else {
+            if ($this->getAclService()->isAllowed($role, $routeMatch->getMatchedRouteName(), $routeMatch->getParam('action'))) {
+                $allowed = TRUE;
+            }
         }
         
-        $routeMatch = $e->getRouteMatch();
-        if (!$this->getAclService()->isAllowed($role, $routeMatch->getMatchedRouteName(), $routeMatch->getParam('action'))) {
+        
+        if (!$allowed) {
             $e->getRouteMatch()
             ->setParam('controller', 'index')
             ->setParam('role', $role)

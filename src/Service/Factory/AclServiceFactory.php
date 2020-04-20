@@ -10,6 +10,7 @@ use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Sql;
 use Laminas\Permissions\Acl\Acl;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Settings\Model\SettingsModel;
 use User\Model\RoleModel;
 use User\Model\UserModel;
 use Exception;
@@ -20,25 +21,34 @@ class AclServiceFactory implements FactoryInterface
     {
         $config = $container->get('configuration');
         $aclService = new AclService(New Acl());
+        $adapter = $container->get('user-model-adapter');
         
+        $settings = new SettingsModel($adapter);
+        $settings->read(['MODULE' => 'ACL', 'SETTING' => 'CONFIG_SOURCE']);
         
-        if ($config['acl_config']['source'] == 'config') {
-            $aclService->setupConfig($config['acl']);
-            return $aclService;
-        } 
+        switch ($settings->VALUE) {
+            case 'CONFIG':
+                $aclService->setupConfig($config['acl']);
+                return $aclService;
+                break;
+            case 'DB':
+                break;
+            default:
+                return FALSE;
+                break;
+        }
         
         /******************************
          * ACL Configuration
          *
          * Retrieve Roles and Inheritance
          ******************************/
-        $adapter = $container->get('user-model-adapter');
         $model = new RoleModel($adapter);
         $sql = new Sql($adapter);
         
         $select = new Select();
         $select->from($model->getTableName());
-        $select->order(['PARENT']);
+        $select->order(['PRIORITY']);
         
         $statement = $sql->prepareStatementForSqlObject($select);
         $resultSet = new ResultSet();

@@ -54,13 +54,13 @@ return [
         ],
     ],
     'acl' => [
-        'guest' => [
-            'denied' => ['view'],
-            'acl/config' => ['create','clear','index'],
+        'admin' => [
+            'acl/config' => [],
+            'acl/default' => [],
         ],
     ],
     'acl_config' => [
-        'source' => 'db',
+        'source' => 'config',
     ],
     'controllers' => [
         'factories' => [

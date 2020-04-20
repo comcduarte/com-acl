@@ -12,7 +12,8 @@ class AclListenerFactory implements FactoryInterface
         $aclService = $container->get('acl-service');
         $authService = $container->get('auth-service');
         $aclListener = new AclListener($aclService, $authService);
-        
+        $adapter = $container->get('acl-model-adapter');
+        $aclListener->setDbAdapter($adapter);
         return $aclListener;
     }
 }

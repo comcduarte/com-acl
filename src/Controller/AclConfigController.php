@@ -39,10 +39,10 @@ class AclConfigController extends AbstractConfigController
         $ddl->addColumn(new Datetime('DATE_CREATED', TRUE));
         $ddl->addColumn(new Datetime('DATE_MODIFIED', TRUE));
         
-        $ddl->addColumn(new Varchar('ROLE', 255));
-        $ddl->addColumn(new Varchar('RESOURCE', 255));
-        $ddl->addColumn(new Varchar('POLICY', 255));
-        $ddl->addColumn(new Varchar('PRIVILEGE', 255));
+        $ddl->addColumn(new Varchar('ROLE', 255, TRUE));
+        $ddl->addColumn(new Varchar('RESOURCE', 255, TRUE));
+        $ddl->addColumn(new Varchar('POLICY', 255, TRUE));
+        $ddl->addColumn(new Varchar('PRIVILEGE', 255, TRUE));
         
         $ddl->addConstraint(new PrimaryKey('UUID'));
         
@@ -53,28 +53,28 @@ class AclConfigController extends AbstractConfigController
          * Default ACL Rules
          ******************************/
         $acl = new AclModel($this->adapter);
-        $acl->ROLE = $acl::ROLE_GUEST;
+        $acl->ROLE = $acl::ROLE_EVERYONE;
         $acl->RESOURCE = 'home';
         $acl->PRIVILEGE = 'index';
         $acl->POLICY = $acl::POLICY_ALLOW;
         $acl->create();
         
         $acl = new AclModel($this->adapter);
-        $acl->ROLE = $acl::ROLE_GUEST;
+        $acl->ROLE = $acl::ROLE_EVERYONE;
         $acl->RESOURCE = 'user/login';
         $acl->PRIVILEGE = 'login';
         $acl->POLICY = $acl::POLICY_ALLOW;
         $acl->create();
         
         $acl = new AclModel($this->adapter);
-        $acl->ROLE = $acl::ROLE_GUEST;
+        $acl->ROLE = $acl::ROLE_EVERYONE;
         $acl->RESOURCE = 'user/logout';
         $acl->PRIVILEGE = 'logout';
         $acl->POLICY = $acl::POLICY_ALLOW;
         $acl->create();
         
         $acl = new AclModel($this->adapter);
-        $acl->ROLE = $acl::ROLE_GUEST;
+        $acl->ROLE = $acl::ROLE_EVERYONE;
         $acl->RESOURCE = 'denied';
         $acl->PRIVILEGE = 'view';
         $acl->POLICY = $acl::POLICY_ALLOW;
@@ -83,21 +83,42 @@ class AclConfigController extends AbstractConfigController
         $acl = new AclModel($this->adapter);
         $acl->ROLE = $acl::ROLE_ADMIN;
         $acl->RESOURCE = 'acl/config';
-        $acl->PRIVILEGE = 'index';
+        $acl->PRIVILEGE = '';
         $acl->POLICY = $acl::POLICY_ALLOW;
         $acl->create();
         
         $acl = new AclModel($this->adapter);
         $acl->ROLE = $acl::ROLE_ADMIN;
-        $acl->RESOURCE = 'acl/config';
-        $acl->PRIVILEGE = 'create';
+        $acl->RESOURCE = 'user/config';
+        $acl->PRIVILEGE = '';
         $acl->POLICY = $acl::POLICY_ALLOW;
         $acl->create();
         
         $acl = new AclModel($this->adapter);
         $acl->ROLE = $acl::ROLE_ADMIN;
-        $acl->RESOURCE = 'acl/config';
-        $acl->PRIVILEGE = 'clear';
+        $acl->RESOURCE = 'user/default';
+        $acl->PRIVILEGE = '';
+        $acl->POLICY = $acl::POLICY_ALLOW;
+        $acl->create();
+        
+        $acl = new AclModel($this->adapter);
+        $acl->ROLE = $acl::ROLE_ADMIN;
+        $acl->RESOURCE = 'role/default';
+        $acl->PRIVILEGE = '';
+        $acl->POLICY = $acl::POLICY_ALLOW;
+        $acl->create();
+        
+        $acl = new AclModel($this->adapter);
+        $acl->ROLE = $acl::ROLE_ADMIN;
+        $acl->RESOURCE = 'acl/default';
+        $acl->PRIVILEGE = '';
+        $acl->POLICY = $acl::POLICY_ALLOW;
+        $acl->create();
+        
+        $acl = new AclModel($this->adapter);
+        $acl->ROLE = $acl::ROLE_ADMIN;
+        $acl->RESOURCE = 'settings/default';
+        $acl->PRIVILEGE = '';
         $acl->POLICY = $acl::POLICY_ALLOW;
         $acl->create();
     }

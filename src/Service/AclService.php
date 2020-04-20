@@ -1,6 +1,7 @@
 <?php 
 namespace Acl\Service;
 
+use Acl\Model\AclModel;
 use Laminas\EventManager\EventManagerAwareInterface;
 use Laminas\EventManager\EventManagerAwareTrait;
 use Laminas\Permissions\Acl\Acl;
@@ -39,18 +40,27 @@ class AclService implements EventManagerAwareInterface
          * Parser for Database Config
          ******************************/
         foreach ($data as $record) {
-            $role = ('' == $record['ROLE']) ? NULL : $record['ROLE'];
-            $resource = ('' == $record['RESOURCE']) ? NULL : $record['RESOURCE'];
             $privilege = ('' == $record['PRIVILEGE']) ? NULL : $record['PRIVILEGE'];
             $policy = ('' == $record['POLICY']) ? NULL : $record['POLICY'];
             
-            if (!$acl->hasRole($role)) {
-                $acl->addRole(new GenericRole($role));
+            if ('' == $record['ROLE'] || 'NULL' == $record['ROLE']) {
+                $role = NULL;
+            } else {
+                $role = $record['ROLE'];
+                if (!$acl->hasRole($role)) {
+                    $acl->addRole(new GenericRole($role));
+                }
             }
             
-            if (!$acl->hasResource($resource)) {
-                $acl->addResource(new GenericResource($resource));
+            if ('' == $record['RESOURCE'] || 'NULL' == $record['RESOURCE']) {
+                $resource = NULL;
+            } else {
+                $resource = $record['RESOURCE'];
+                if (!$acl->hasResource($resource)) {
+                    $acl->addResource(new GenericResource($resource));
+                } 
             }
+            
             
             switch ($policy) 
             {
@@ -100,6 +110,10 @@ class AclService implements EventManagerAwareInterface
     public function setupRoles(array $data) 
     {
         $acl = $this->getAcl();
+        /**
+         * Setup Default Roles
+         */
+        $acl->addRole(new GenericRole(AclModel::ROLE_EVERYONE));
         
         /******************************
          * Parser for Database Config
@@ -109,7 +123,11 @@ class AclService implements EventManagerAwareInterface
             $parent = $record['PARENT'];
             
             if (!$acl->hasRole($role)) {
-                $acl->addRole(new GenericRole($role), $parent);
+                if ($parent) {
+                    $acl->addRole(new GenericRole($role), [$parent, AclModel::ROLE_EVERYONE]);
+                } else {
+                    $acl->addRole(new GenericRole($role), AclModel::ROLE_EVERYONE);
+                }
             }
         }
     }
@@ -126,7 +144,11 @@ class AclService implements EventManagerAwareInterface
             $user = $record['USERNAME'];
             
             if (!$acl->hasRole($user)) {
-                $acl->addRole(new GenericRole($user), $role);
+                if ($role) { 
+                    $acl->addRole(new GenericRole($user), [$role, AclModel::ROLE_EVERYONE]);
+                } else {
+                    $acl->addRole(new GenericRole($user), [AclModel::ROLE_EVERYONE]);
+                }
             }
         }
     }
