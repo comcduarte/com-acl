@@ -34,7 +34,8 @@ class AclServiceFactory implements FactoryInterface
             case 'DB':
                 break;
             default:
-                return FALSE;
+                $aclService->setupConfig($config['acl']);
+                return $aclService;
                 break;
         }
         

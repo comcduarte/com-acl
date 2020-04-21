@@ -1,6 +1,7 @@
 <?php 
 namespace Acl\Controller;
 
+use Acl\Model\AclModel;
 use Components\Controller\AbstractConfigController;
 use Laminas\Db\Sql\Sql;
 use Laminas\Db\Sql\Ddl\CreateTable;
@@ -9,7 +10,7 @@ use Laminas\Db\Sql\Ddl\Column\Datetime;
 use Laminas\Db\Sql\Ddl\Column\Integer;
 use Laminas\Db\Sql\Ddl\Column\Varchar;
 use Laminas\Db\Sql\Ddl\Constraint\PrimaryKey;
-use Acl\Model\AclModel;
+use Settings\Model\SettingsModel;
 
 class AclConfigController extends AbstractConfigController
 {
@@ -121,5 +122,18 @@ class AclConfigController extends AbstractConfigController
         $acl->PRIVILEGE = '';
         $acl->POLICY = $acl::POLICY_ALLOW;
         $acl->create();
+        
+        $this->createSettings('ACL');
+        $this->flashMessenger()->addSuccessMessage('Acl Settings created.');
+    }
+
+    public function createSettings($module)
+    {
+        parent::createSettings($module);
+        $setting = new SettingsModel($this->adapter);
+        $setting->MODULE = $module;
+        $setting->SETTING = 'CONFIG_SOURCE';
+        $setting->VALUE = 'CONFIG';
+        $setting->create();
     }
 }
