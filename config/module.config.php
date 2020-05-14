@@ -1,5 +1,9 @@
 <?php
-use Acl\Controller\AclController;
+use Acl\View\Helper\MultiRoleNavigation;
+use Acl\View\Helper\Factory\MultiRoleNavigationFactory;
+use Laminas\Router\Http\Literal;
+use Laminas\Router\Http\Segment;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 return [
     'router' => [
@@ -72,6 +76,16 @@ return [
             'index' => Acl\Controller\IndexController::class,
         ],
     ],
+    'event_manager' => [
+        'lazy_listeners' => [
+            [
+                'listener' => Acl\Listener\NavigationListener::class,
+                'method' => 'addAcl',
+                'event' => Laminas\Mvc\MvcEvent::EVENT_RENDER,
+                'priority' => -100,
+            ],
+        ],
+    ],
     'form_elements' => [
         'factories' => [
             Acl\Form\AclForm::class => Acl\Form\Factory\AclFormFactory::class,
@@ -84,6 +98,8 @@ return [
                 'route' => 'acl/default',
                 'class' => 'dropdown',
                 'order' => 10,
+                'resource' => 'acl/default',
+                'privilege' => 'index',
                 'pages' => [
                     [
                         'label' => 'Add New Acl',
@@ -118,6 +134,15 @@ return [
             Acl\Listener\AclListener::class => Acl\Listener\Factory\AclListenerFactory::class,
             Acl\Service\AclService::class => Acl\Service\Factory\AclServiceFactory::class,
             'acl-model-adapter' => Acl\Service\Factory\AclModelAdapterFactory::class,
+            Acl\Listener\NavigationListener::class => InvokableFactory::class,
+        ],
+    ],
+    'view_helpers' => [
+        'factories' => [
+            MultiRoleNavigation::class => MultiRoleNavigationFactory::class,
+        ],
+        'aliases' => [
+            'navigation' => MultiRoleNavigation::class,
         ],
     ],
     'view_manager' => [
