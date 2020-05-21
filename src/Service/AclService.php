@@ -40,7 +40,7 @@ class AclService implements EventManagerAwareInterface
          * Parser for Database Config
          ******************************/
         foreach ($data as $record) {
-            $privilege = ('' == $record['PRIVILEGE']) ? NULL : $record['PRIVILEGE'];
+            $privilege = ('' == $record['PRIVILEGE']) ? NULL : explode(",", $record['PRIVILEGE']);
             $policy = ('' == $record['POLICY']) ? NULL : $record['POLICY'];
             
             if ('' == $record['ROLE'] || 'NULL' == $record['ROLE']) {
