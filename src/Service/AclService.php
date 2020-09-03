@@ -94,17 +94,35 @@ class AclService implements EventManagerAwareInterface
         }
     }
     
-    public function isAllowed($role, $resource, $privilege)
+    public function isAllowed($roles, $resource, $privilege)
     {
-        if ($this->getAcl()->hasResource($resource) && $this->getAcl()->hasRole($role)) {
-            $result = $this->getAcl()->isAllowed($role, $resource, $privilege);
-            return $result;
-        } else {
-            /**
-             * Default Rule
-             */
+        if (is_null($roles)) {
             return FALSE;
         }
+        
+        if (!$this->getAcl()->hasResource($resource)) {
+            return FALSE;
+        }
+        
+        switch (TRUE) {
+            case is_array($roles):
+                foreach ($roles as $role) {
+                    if ($this->getAcl()->isAllowed($role, $resource, $privilege)) {
+                        return TRUE;
+                    }
+                }
+                break;
+                
+            case is_string($roles):
+            default:
+                if ($this->getAcl()->isAllowed($roles, $resource, $privilege)) {
+                    return TRUE;
+                }
+                break;
+        }
+        
+        
+        return FALSE;
     }
     
     public function setupRoles(array $data) 
