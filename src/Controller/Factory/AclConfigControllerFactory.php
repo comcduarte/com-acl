@@ -13,6 +13,7 @@ class AclConfigControllerFactory implements FactoryInterface
         $adapter = $container->get('acl-model-adapter');
         
         $controller->setDbAdapter($adapter);
+        $controller->setConfig($container->get('config')['acl']);
         return $controller;
     }
 }
