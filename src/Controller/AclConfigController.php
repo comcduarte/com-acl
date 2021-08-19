@@ -28,10 +28,13 @@ class AclConfigController extends AbstractConfigController
 
     public function createDatabase()
     {
+        /******************************
+         * Create Database
+         ******************************/
         $sql = new Sql($this->adapter);
         
         /******************************
-         * ACL
+         * Acl
          ******************************/
         $ddl = new CreateTable('acl');
         
@@ -50,81 +53,9 @@ class AclConfigController extends AbstractConfigController
         $this->adapter->query($sql->buildSqlString($ddl), $this->adapter::QUERY_MODE_EXECUTE);
         unset($ddl);
         
-        /******************************
-         * Default ACL Rules
-         ******************************/
-        $acl = new AclModel($this->adapter);
-        $acl->ROLE = $acl::ROLE_EVERYONE;
-        $acl->RESOURCE = 'home';
-        $acl->PRIVILEGE = 'index';
-        $acl->POLICY = $acl::POLICY_ALLOW;
-        $acl->create();
-        
-        $acl = new AclModel($this->adapter);
-        $acl->ROLE = $acl::ROLE_EVERYONE;
-        $acl->RESOURCE = 'user/login';
-        $acl->PRIVILEGE = 'login';
-        $acl->POLICY = $acl::POLICY_ALLOW;
-        $acl->create();
-        
-        $acl = new AclModel($this->adapter);
-        $acl->ROLE = $acl::ROLE_EVERYONE;
-        $acl->RESOURCE = 'user/logout';
-        $acl->PRIVILEGE = 'logout';
-        $acl->POLICY = $acl::POLICY_ALLOW;
-        $acl->create();
-        
-        $acl = new AclModel($this->adapter);
-        $acl->ROLE = $acl::ROLE_EVERYONE;
-        $acl->RESOURCE = 'denied';
-        $acl->PRIVILEGE = 'view';
-        $acl->POLICY = $acl::POLICY_ALLOW;
-        $acl->create();
-        
-        $acl = new AclModel($this->adapter);
-        $acl->ROLE = $acl::ROLE_ADMIN;
-        $acl->RESOURCE = 'acl/config';
-        $acl->PRIVILEGE = '';
-        $acl->POLICY = $acl::POLICY_ALLOW;
-        $acl->create();
-        
-        $acl = new AclModel($this->adapter);
-        $acl->ROLE = $acl::ROLE_ADMIN;
-        $acl->RESOURCE = 'user/config';
-        $acl->PRIVILEGE = '';
-        $acl->POLICY = $acl::POLICY_ALLOW;
-        $acl->create();
-        
-        $acl = new AclModel($this->adapter);
-        $acl->ROLE = $acl::ROLE_ADMIN;
-        $acl->RESOURCE = 'user/default';
-        $acl->PRIVILEGE = '';
-        $acl->POLICY = $acl::POLICY_ALLOW;
-        $acl->create();
-        
-        $acl = new AclModel($this->adapter);
-        $acl->ROLE = $acl::ROLE_ADMIN;
-        $acl->RESOURCE = 'role/default';
-        $acl->PRIVILEGE = '';
-        $acl->POLICY = $acl::POLICY_ALLOW;
-        $acl->create();
-        
-        $acl = new AclModel($this->adapter);
-        $acl->ROLE = $acl::ROLE_ADMIN;
-        $acl->RESOURCE = 'acl/default';
-        $acl->PRIVILEGE = '';
-        $acl->POLICY = $acl::POLICY_ALLOW;
-        $acl->create();
-        
-        $acl = new AclModel($this->adapter);
-        $acl->ROLE = $acl::ROLE_ADMIN;
-        $acl->RESOURCE = 'settings/default';
-        $acl->PRIVILEGE = '';
-        $acl->POLICY = $acl::POLICY_ALLOW;
-        $acl->create();
         
         $this->createSettings('ACL');
-        $this->flashMessenger()->addSuccessMessage('Acl Settings created.');
+        $this->install();
     }
 
     public function createSettings($module)
@@ -135,5 +66,28 @@ class AclConfigController extends AbstractConfigController
         $setting->SETTING = 'CONFIG_SOURCE';
         $setting->VALUE = 'CONFIG';
         $setting->create();
+        $this->flashMessenger()->addSuccessMessage('Acl Settings created.');
+    }
+    
+    public function install()
+    {
+        /******************************
+         * Default ACL Rules
+         ******************************/
+        $acl = new AclModel($this->adapter);
+        
+        foreach ($this->getConfig() as $role => $rule) {
+            foreach ($rule as $resource => $privileges) {
+                $acl->UUID = $acl->generate_uuid();
+                $acl->ROLE = $role;
+                $acl->RESOURCE = $resource;
+                $acl->PRIVILEGE = implode(',', $privileges);
+                $acl->POLICY = $acl::POLICY_ALLOW;
+                $acl->create();
+            }
+        }
+        $this->flashMessenger()->addSuccessMessage('Default Acl Rules created.');
+        
+        
     }
 }
