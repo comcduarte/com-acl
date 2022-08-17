@@ -1,7 +1,7 @@
 <?php
 namespace Acl\Controller\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Acl\Controller\AclConfigController;
 
