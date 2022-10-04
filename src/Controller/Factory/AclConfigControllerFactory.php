@@ -1,7 +1,7 @@
 <?php
 namespace Acl\Controller\Factory;
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Acl\Controller\AclConfigController;
 
@@ -13,6 +13,7 @@ class AclConfigControllerFactory implements FactoryInterface
         $adapter = $container->get('acl-model-adapter');
         
         $controller->setDbAdapter($adapter);
+        $controller->setConfig($container->get('config')['acl']);
         return $controller;
     }
 }

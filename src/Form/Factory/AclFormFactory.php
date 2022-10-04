@@ -2,7 +2,7 @@
 namespace Acl\Form\Factory;
 
 use Acl\Form\AclForm;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class AclFormFactory implements FactoryInterface

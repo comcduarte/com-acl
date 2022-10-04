@@ -4,7 +4,7 @@ namespace Acl\Controller\Factory;
 use Acl\Controller\AclController;
 use Acl\Form\AclForm;
 use Acl\Model\AclModel;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class AclControllerFactory implements FactoryInterface

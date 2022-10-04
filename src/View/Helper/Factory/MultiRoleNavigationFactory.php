@@ -2,7 +2,7 @@
 namespace Acl\View\Helper\Factory;
 
 use Acl\View\Helper\MultiRoleNavigation;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class MultiRoleNavigationFactory implements FactoryInterface
