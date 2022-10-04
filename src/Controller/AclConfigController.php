@@ -87,7 +87,5 @@ class AclConfigController extends AbstractConfigController
             }
         }
         $this->flashMessenger()->addSuccessMessage('Default Acl Rules created.');
-        
-        
     }
 }

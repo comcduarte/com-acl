@@ -44,8 +44,6 @@ class AclController extends AbstractBaseController
             $header = array_keys($records[0]);
         }
         
-        
-        
         $params = [
             [
                 'route' => 'acl/default',
