@@ -3,7 +3,7 @@ namespace Acl\Service\Factory;
 
 use Acl\Model\AclModel;
 use Acl\Service\AclService;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Db\Sql\Join;
 use Laminas\Db\Sql\Select;

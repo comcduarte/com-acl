@@ -2,7 +2,7 @@
 namespace Acl\Listener\Factory;
 
 use Acl\Listener\AclListener;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class AclListenerFactory implements FactoryInterface
